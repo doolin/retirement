@@ -34,6 +34,7 @@ tickets findable by glob without reading frontmatter.
 `backlog` -> `ready` -> `in_progress` -> `done` (move file to `done/`)
 
 Use `blocked` when waiting on a dependency.
+Update status when moving.
 
 ### Scoring (WSJF-style)
 
