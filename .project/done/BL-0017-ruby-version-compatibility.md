@@ -2,7 +2,7 @@
 id: BL-0017
 title: Set Ruby version to Lambda-compatible 3.3
 type: bug
-status: backlog
+status: done
 value: 3                   # CI and Lambda both need this
 effort: 1                  # change version constraint, test locally
 urgency: 3                 # Lambda deploy forced a gemspec change already
@@ -11,7 +11,7 @@ score: 6.0                 # (3 + 3) / 1
 owner: dave
 created: 2026-03-14
 updated: 2026-03-14
-completed:
+completed: 2026-03-14
 parent: null
 depends_on: []
 area: infrastructure
@@ -34,12 +34,12 @@ CI workflow, and Lambda runtime. App runs cleanly on the chosen version.
 
 ## Acceptance Criteria
 
-- [ ] Decide target Ruby version(s) and document rationale
-- [ ] Update `.ruby-version` to match
-- [ ] Update `retirement.gemspec` `required_ruby_version`
-- [ ] Update CI workflow Ruby version matrix
-- [ ] Verify `bundle exec rspec` passes on target version
-- [ ] Verify Lambda deploy works on target version
+- [x] Decide target Ruby version(s) and document rationale
+- [x] Update `.ruby-version` to match
+- [x] Update `retirement.gemspec` `required_ruby_version`
+- [x] Update CI workflow Ruby version matrix
+- [x] Verify `bundle exec rspec` passes on target version
+- [x] Verify Lambda deploy works on target version
 
 ## Notes
 
