@@ -1,38 +1,199 @@
 <a href="/" class="back">&larr; New Scenario</a>
 
-<h2>Scenario: <%= scenario[:name] %></h2>
+<h2><%= scenario[:name] %></h2>
 <p class="legend">
-  Savings: $<%= format("%<v>.0f", v: scenario[:savings]) %> |
-  Income: $<%= format("%<v>.0f", v: scenario[:annual_income]) %> |
-  Expenses: $<%= format("%<v>.0f", v: scenario[:annual_expenses]) %>
+  Savings: $<%= format("%<v>,.0f", v: scenario[:savings]) %> |
+  Income: $<%= format("%<v>,.0f", v: scenario[:annual_income]) %> |
+  Expenses: $<%= format("%<v>,.0f", v: scenario[:annual_expenses]) %>
+  <br>Inflation: <%= (scenario[:inflation_rate] * 100).round(1) %>% |
+  Drawdown: <%= (scenario[:drawdown_percent] * 100).round(1) %>%
+  <% if scenario[:drawdown_fixed] > 0 %>
+    + $<%= format("%<v>,.0f", v: scenario[:drawdown_fixed]) %>/yr
+  <% end %>
   <% if portfolio %>
     <br>Portfolio: <%= portfolio.describe.map { |a| "#{a[:name]} #{(a[:weight] * 100).round}%" }.join(", ") %>
   <% end %>
 </p>
 
-<h2>Deterministic Projection</h2>
-<table>
-  <tr><th>Year</th><th>Balance</th><th>Income</th><th>Expenses</th></tr>
-  <% projections.order(:year).each do |row| %>
-    <tr>
-      <td><%= row[:year] %></td>
-      <td class="highlight">$<%= format("%<v>,.0f", v: row[:balance].to_f) %></td>
-      <td>$<%= format("%<v>,.0f", v: row[:income].to_f) %></td>
-      <td>$<%= format("%<v>,.0f", v: row[:expenses].to_f) %></td>
-    </tr>
-  <% end %>
-</table>
+<%
+  # Collect data for charts
+  det_years = []
+  det_balances = []
+  projections.order(:year).each do |row|
+    det_years << row[:year]
+    det_balances << row[:balance].to_f.round(0)
+  end
 
-<h2>Monte Carlo Simulation (1,000 trials)</h2>
-<p class="legend">P10 = worst 10%, P50 = median, P90 = best 10%</p>
-<table>
-  <tr><th>Year</th><th>P10</th><th>P50</th><th>P90</th></tr>
-  <% monte_carlo.each do |row| %>
-    <tr>
-      <td><%= row[:year] %></td>
-      <td>$<%= format("%<v>,.0f", v: row[:p10]) %></td>
-      <td class="highlight">$<%= format("%<v>,.0f", v: row[:p50]) %></td>
-      <td>$<%= format("%<v>,.0f", v: row[:p90]) %></td>
-    </tr>
-  <% end %>
-</table>
+  mc_years = monte_carlo.map { |r| r[:year] }
+  mc_p10 = monte_carlo.map { |r| r[:p10].round(0) }
+  mc_p50 = monte_carlo.map { |r| r[:p50].round(0) }
+  mc_p90 = monte_carlo.map { |r| r[:p90].round(0) }
+
+  final_det = det_balances.last || 0
+  final_p10 = mc_p10.last || 0
+  final_p50 = mc_p50.last || 0
+  final_p90 = mc_p90.last || 0
+%>
+
+<div class="summary-cards">
+  <div class="card">
+    <div class="value">$<%= format("%<v>,.0f", v: final_det) %></div>
+    <div class="label">Deterministic Final</div>
+  </div>
+  <div class="card">
+    <div class="value">$<%= format("%<v>,.0f", v: final_p50) %></div>
+    <div class="label">Monte Carlo Median</div>
+  </div>
+  <div class="card">
+    <div class="value">$<%= format("%<v>,.0f", v: final_p10) %></div>
+    <div class="label">Worst 10%</div>
+  </div>
+  <div class="card">
+    <div class="value">$<%= format("%<v>,.0f", v: final_p90) %></div>
+    <div class="label">Best 10%</div>
+  </div>
+</div>
+
+<h2>Balance Over Time</h2>
+<div class="chart-container">
+  <canvas id="balanceChart"></canvas>
+</div>
+
+<h2>Monte Carlo Spread</h2>
+<div class="chart-container">
+  <canvas id="mcChart"></canvas>
+</div>
+
+<% if portfolio %>
+<h2>Portfolio Allocation</h2>
+<div class="chart-container">
+  <canvas id="allocChart" style="max-height:250px;"></canvas>
+</div>
+<% end %>
+
+<div class="tables-row">
+  <div>
+    <h2>Deterministic</h2>
+    <table>
+      <tr><th>Yr</th><th>Balance</th></tr>
+      <% projections.order(:year).each do |row| %>
+        <tr>
+          <td><%= row[:year] %></td>
+          <td class="highlight">$<%= format("%<v>,.0f", v: row[:balance].to_f) %></td>
+        </tr>
+      <% end %>
+    </table>
+  </div>
+  <div>
+    <h2>Monte Carlo</h2>
+    <table>
+      <tr><th>Yr</th><th>P10</th><th>P50</th><th>P90</th></tr>
+      <% monte_carlo.each do |row| %>
+        <tr>
+          <td><%= row[:year] %></td>
+          <td>$<%= format("%<v>,.0f", v: row[:p10]) %></td>
+          <td class="highlight">$<%= format("%<v>,.0f", v: row[:p50]) %></td>
+          <td>$<%= format("%<v>,.0f", v: row[:p90]) %></td>
+        </tr>
+      <% end %>
+    </table>
+  </div>
+</div>
+
+<script>
+const fmt = (v) => '$' + v.toLocaleString('en-US', {maximumFractionDigits: 0});
+
+// Balance chart: deterministic line
+new Chart(document.getElementById('balanceChart'), {
+  type: 'line',
+  data: {
+    labels: <%= det_years.to_json %>,
+    datasets: [{
+      label: 'Deterministic Balance',
+      data: <%= det_balances.to_json %>,
+      borderColor: '#0f3460',
+      backgroundColor: 'rgba(15,52,96,0.1)',
+      fill: true,
+      tension: 0.3,
+      pointRadius: 2,
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      tooltip: { callbacks: { label: (ctx) => fmt(ctx.raw) } }
+    },
+    scales: {
+      y: { ticks: { callback: (v) => fmt(v) } },
+      x: { title: { display: true, text: 'Year' } }
+    }
+  }
+});
+
+// Monte Carlo fan chart
+new Chart(document.getElementById('mcChart'), {
+  type: 'line',
+  data: {
+    labels: <%= mc_years.to_json %>,
+    datasets: [
+      {
+        label: 'P90 (Best 10%)',
+        data: <%= mc_p90.to_json %>,
+        borderColor: '#2ecc71',
+        backgroundColor: 'rgba(46,204,113,0.08)',
+        fill: '+1',
+        tension: 0.3,
+        pointRadius: 0,
+      },
+      {
+        label: 'P50 (Median)',
+        data: <%= mc_p50.to_json %>,
+        borderColor: '#0f3460',
+        borderWidth: 2,
+        fill: false,
+        tension: 0.3,
+        pointRadius: 2,
+      },
+      {
+        label: 'P10 (Worst 10%)',
+        data: <%= mc_p10.to_json %>,
+        borderColor: '#e74c3c',
+        backgroundColor: 'rgba(231,76,60,0.08)',
+        fill: '-1',
+        tension: 0.3,
+        pointRadius: 0,
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      tooltip: { callbacks: { label: (ctx) => ctx.dataset.label + ': ' + fmt(ctx.raw) } }
+    },
+    scales: {
+      y: { ticks: { callback: (v) => fmt(v) } },
+      x: { title: { display: true, text: 'Year' } }
+    }
+  }
+});
+
+<% if portfolio %>
+// Allocation pie chart
+new Chart(document.getElementById('allocChart'), {
+  type: 'doughnut',
+  data: {
+    labels: <%= portfolio.describe.map { |a| a[:name] }.to_json %>,
+    datasets: [{
+      data: <%= portfolio.describe.map { |a| (a[:weight] * 100).round(1) }.to_json %>,
+      backgroundColor: ['#0f3460', '#e74c3c', '#2ecc71', '#f39c12', '#9b59b6'],
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      tooltip: { callbacks: { label: (ctx) => ctx.label + ': ' + ctx.raw + '%' } }
+    }
+  }
+});
+<% end %>
+</script>
