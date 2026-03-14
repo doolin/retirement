@@ -1,10 +1,296 @@
+# frozen_string_literal: true
+
+plugins:
+  - rubocop-performance
+  - rubocop-rake
+  - rubocop-rspec
+
 AllCops:
   TargetRubyVersion: 4.0
   NewCops: enable
   SuggestExtensions: false
 
+# =============================================================================
+# Layout
+# =============================================================================
+
+Layout/LineLength:
+  Max: 100
+
+Layout/IndentationWidth:
+  Width: 2
+
+Layout/TrailingWhitespace:
+  Enabled: true
+
+Layout/TrailingEmptyLines:
+  EnforcedStyle: final_newline
+
+Layout/EmptyLinesAroundMethodBody:
+  Enabled: true
+
+Layout/EmptyLinesAroundClassBody:
+  EnforcedStyle: no_empty_lines
+
+Layout/EmptyLinesAroundModuleBody:
+  EnforcedStyle: no_empty_lines
+
+Layout/EmptyLinesAroundBlockBody:
+  EnforcedStyle: no_empty_lines
+
+Layout/SpaceInsideHashLiteralBraces:
+  EnforcedStyle: space
+
+# =============================================================================
+# Metrics - strict thresholds
+# =============================================================================
+
+Metrics/MethodLength:
+  Max: 8
+  CountAsOne:
+    - heredoc
+    - array
+    - hash
+
+Metrics/ClassLength:
+  Max: 50
+  CountAsOne:
+    - heredoc
+    - array
+    - hash
+
+Metrics/ModuleLength:
+  Max: 50
+  CountAsOne:
+    - heredoc
+    - array
+    - hash
+
+Metrics/AbcSize:
+  Max: 12
+
+Metrics/CyclomaticComplexity:
+  Max: 5
+
+Metrics/PerceivedComplexity:
+  Max: 5
+
+Metrics/BlockLength:
+  Max: 15
+  Exclude:
+    - "spec/**/*"
+    - "retirement.gemspec"
+
+Metrics/ParameterLists:
+  Max: 3
+  CountKeywordArgs: true
+
+Metrics/BlockNesting:
+  Max: 2
+
+# =============================================================================
+# Style
+# =============================================================================
+
 Style/StringLiterals:
   EnforcedStyle: double_quotes
 
-Layout/LineLength:
-  Max: 120
+Style/StringLiteralsInInterpolation:
+  EnforcedStyle: double_quotes
+
+Style/FrozenStringLiteralComment:
+  EnforcedStyle: always
+
+Style/Documentation:
+  Enabled: true
+  Exclude:
+    - "spec/**/*"
+    - "lib/retirement/version.rb"
+
+Style/AndOr:
+  EnforcedStyle: always
+
+Style/SymbolProc:
+  Enabled: true
+
+Style/GuardClause:
+  Enabled: true
+
+Style/SignalException:
+  EnforcedStyle: only_raise
+
+Style/TrailingCommaInArguments:
+  EnforcedStyleForMultiline: comma
+
+Style/TrailingCommaInArrayLiteral:
+  EnforcedStyleForMultiline: comma
+
+Style/TrailingCommaInHashLiteral:
+  EnforcedStyleForMultiline: comma
+
+Style/SymbolArray:
+  EnforcedStyle: percent
+
+Style/WordArray:
+  EnforcedStyle: percent
+
+Style/ExplicitBlockArgument:
+  Enabled: true
+
+Style/SingleLineMethods:
+  Enabled: true
+
+Style/EachWithObject:
+  Enabled: true
+
+Style/IfUnlessModifier:
+  Enabled: true
+
+# =============================================================================
+# Lint
+# =============================================================================
+
+Lint/AmbiguousBlockAssociation:
+  Enabled: true
+
+Lint/AmbiguousOperatorPrecedence:
+  Enabled: true
+
+Lint/AmbiguousRegexpLiteral:
+  Enabled: true
+
+Lint/BooleanSymbol:
+  Enabled: true
+
+Lint/ConstantDefinitionInBlock:
+  Enabled: true
+
+Lint/Debugger:
+  Enabled: true
+
+Lint/DeprecatedClassMethods:
+  Enabled: true
+
+Lint/DuplicateBranch:
+  Enabled: true
+
+Lint/DuplicateElsifCondition:
+  Enabled: true
+
+Lint/DuplicateHashKey:
+  Enabled: true
+
+Lint/DuplicateMethods:
+  Enabled: true
+
+Lint/EmptyBlock:
+  Enabled: true
+
+Lint/EmptyConditionalBody:
+  Enabled: true
+
+Lint/FloatComparison:
+  Enabled: true
+
+Lint/MissingSuper:
+  Enabled: true
+
+Lint/RedundantStringCoercion:
+  Enabled: true
+
+Lint/ShadowingOuterLocalVariable:
+  Enabled: true
+
+Lint/UnderscorePrefixedVariableName:
+  Enabled: true
+
+Lint/UnusedMethodArgument:
+  Enabled: true
+
+Lint/UnusedBlockArgument:
+  Enabled: true
+
+Lint/UselessAssignment:
+  Enabled: true
+
+# =============================================================================
+# Naming
+# =============================================================================
+
+Naming/MethodName:
+  EnforcedStyle: snake_case
+
+Naming/ConstantName:
+  Enabled: true
+
+Naming/MethodParameterName:
+  MinNameLength: 2
+
+# =============================================================================
+# Performance
+# =============================================================================
+
+Performance/Count:
+  Enabled: true
+
+Performance/Detect:
+  Enabled: true
+
+Performance/FlatMap:
+  Enabled: true
+
+Performance/MapCompact:
+  Enabled: true
+
+Performance/RedundantMerge:
+  Enabled: true
+
+Performance/SelectMap:
+  Enabled: true
+
+Performance/Size:
+  Enabled: true
+
+Performance/StringReplacement:
+  Enabled: true
+
+# =============================================================================
+# RSpec
+# =============================================================================
+
+RSpec/ExampleLength:
+  Max: 10
+
+RSpec/NestedGroups:
+  Max: 3
+
+RSpec/MultipleExpectations:
+  Max: 1
+
+RSpec/NamedSubject:
+  Enabled: true
+
+RSpec/LetSetup:
+  Enabled: true
+
+RSpec/DescribedClass:
+  EnforcedStyle: described_class
+
+RSpec/ExpectChange:
+  EnforcedStyle: block
+
+RSpec/PredicateMatcher:
+  EnforcedStyle: explicit
+
+RSpec/ContextWording:
+  Prefixes:
+    - when
+    - with
+    - without
+
+# =============================================================================
+# Rake
+# =============================================================================
+
+Rake/Desc:
+  Enabled: true

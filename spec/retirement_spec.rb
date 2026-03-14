@@ -4,6 +4,6 @@ require "spec_helper"
 
 RSpec.describe Retirement do
   it "has a version number" do
-    expect(Retirement::VERSION).not_to be_nil
+    expect(Retirement::VERSION.nil?).to be(false)
   end
 end
