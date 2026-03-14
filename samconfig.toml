@@ -1,0 +1,9 @@
+version = 0.1
+
+[default.deploy.parameters]
+stack_name = "retirement-calculator"
+s3_bucket = "retirement-deployments"
+s3_prefix = "retirement"
+region = "us-west-1"
+capabilities = "CAPABILITY_IAM"
+confirm_changeset = true

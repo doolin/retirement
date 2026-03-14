@@ -1,0 +1,28 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Retirement Calculator - Sinatra app on Lambda
+
+Globals:
+  Function:
+    Timeout: 30
+    MemorySize: 512
+
+Resources:
+  RetirementFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: app.handler
+      Runtime: ruby3.3
+      CodeUri: .
+      FunctionUrlConfig:
+        AuthType: NONE
+      Environment:
+        Variables:
+          RACK_ENV: production
+    Metadata:
+      BuildMethod: makefile
+
+Outputs:
+  FunctionUrl:
+    Description: Lambda Function URL
+    Value: !GetAtt RetirementFunctionUrl.FunctionUrl

@@ -40,6 +40,18 @@ The app runs on localhost. To access it from another device (e.g., iPhone):
 | **Deploy** | Push to Fly.io / Render / Railway | Persistent public URL. |
 | **Local network** | `rackup -o 0.0.0.0 -p 4567` | Works if both devices are on the same Wi-Fi and your machine's local IP is reachable. |
 
+## Deploy to AWS Lambda
+
+Requires [AWS SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/install-sam-cli.html), Docker, and configured AWS credentials.
+Infrastructure (Lambda, Function URL, CloudFront) is managed by Terraform in `form-terra`.
+
+```bash
+bin/build    # writes REVISION, runs sam build (Docker bundles gems for Lambda)
+bin/deploy   # zips artifacts, uploads to S3, updates Lambda, invalidates CloudFront
+```
+
+Served at `clubstraylight.com/retirement` via CloudFront.
+
 ## Development
 
 ```bash

@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+LAMBDA_FUNCTION="retirement"
+S3_BUCKET="retirement-deployments"
+S3_KEY="retirement-deploy.zip"
+AWS_REGION="us-west-1"
+CF_DISTRIBUTION="ERIW60YQ29CKU"
+BUILD_DIR=".aws-sam/build/RetirementFunction"
+DEPLOY_ZIP="/tmp/retirement-deploy.zip"
+
+echo "==> Packaging..."
+(cd "$BUILD_DIR" && zip -qr "$DEPLOY_ZIP" . -x '*.DS_Store')
+
+echo "==> Uploading to S3..."
+aws s3 cp "$DEPLOY_ZIP" "s3://$S3_BUCKET/$S3_KEY" --region "$AWS_REGION"
+
+echo "==> Updating Lambda..."
+aws lambda update-function-code \
+  --function-name "$LAMBDA_FUNCTION" \
+  --s3-bucket "$S3_BUCKET" \
+  --s3-key "$S3_KEY" \
+  --region "$AWS_REGION" \
+  --query 'FunctionName' --output text
+
+echo "==> Waiting for update..."
+aws lambda wait function-updated \
+  --function-name "$LAMBDA_FUNCTION" \
+  --region "$AWS_REGION"
+
+echo "==> Invalidating CloudFront cache..."
+aws cloudfront create-invalidation \
+  --distribution-id "$CF_DISTRIBUTION" \
+  --paths '/retirement*' \
+  --query 'Invalidation.Id' --output text
+
+echo "==> Done."

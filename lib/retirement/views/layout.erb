@@ -75,5 +75,8 @@
 <body>
   <h1>Retirement Calculator</h1>
   <%= yield %>
+  <% if Retirement::REVISION %>
+    <p style="text-align:center;color:#ccc;font-size:0.7rem;margin-top:2rem;"><%= Retirement::REVISION %></p>
+  <% end %>
 </body>
 </html>

@@ -10,6 +10,7 @@ module Retirement
   # deterministic projections and Monte Carlo results.
   class Web < Sinatra::Base
     set :views, File.join(__dir__, "views")
+    set :host_authorization, permitted: :any
 
     helpers do
       def commify(number)
@@ -17,11 +18,11 @@ module Retirement
       end
     end
 
-    get "/" do
+    get %r{/(retirement)?} do
       erb :index
     end
 
-    post "/calculate" do
+    post %r{/(retirement/)?calculate} do
       builder = ScenarioBuilder.new(params)
       results = run_projections(builder)
       erb :results, locals: results

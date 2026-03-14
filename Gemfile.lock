@@ -2,6 +2,7 @@ PATH
   remote: .
   specs:
     retirement (0.1.0)
+      lamby (~> 5.0)
       puma (~> 7.0)
       sequel (~> 5.0)
       sinatra (~> 4.0)
@@ -21,6 +22,10 @@ GEM
     json-schema (6.1.0)
       addressable (~> 2.8)
       bigdecimal (>= 3.1, < 5)
+    lambda-console-ruby (1.0.0)
+    lamby (5.2.1)
+      lambda-console-ruby
+      rack
     language_server-protocol (3.17.0.5)
     lint_roller (1.1.0)
     logger (1.7.0)
@@ -123,6 +128,7 @@ PLATFORMS
   arm-linux-musl
   arm64-darwin
   x86_64-darwin
+  x86_64-linux
   x86_64-linux-gnu
   x86_64-linux-musl
 
@@ -144,6 +150,8 @@ CHECKSUMS
   docile (1.4.1) sha256=96159be799bfa73cdb721b840e9802126e4e03dfc26863db73647204c727f21e
   json (2.18.0) sha256=b10506aee4183f5cf49e0efc48073d7b75843ce3782c68dbeb763351c08fd505
   json-schema (6.1.0) sha256=6bf70a2cfb6dfd5a06da28093fa8190f324c88eabd36a7f47097f227321dc702
+  lambda-console-ruby (1.0.0) sha256=1a10bf312003df56ad4096e16370a4bb65b57b63366400c4404d84becea724ba
+  lamby (5.2.1) sha256=30178bc79f097319851020fa5231bbac29c2a97722a6e2039751f548ee6e7509
   language_server-protocol (3.17.0.5) sha256=fd1e39a51a28bf3eec959379985a72e296e9f9acfce46f6a79d31ca8760803cc
   lint_roller (1.1.0) sha256=2c0c845b632a7d172cb849cc90c1bce937a28c5c8ccccb50dfd46a485003cc87
   logger (1.7.0) sha256=196edec7cc44b66cfb40f9755ce11b392f21f7967696af15d274dde7edff0203
