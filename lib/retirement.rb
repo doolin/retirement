@@ -3,6 +3,7 @@
 require_relative "retirement/version"
 require_relative "retirement/database"
 require_relative "retirement/calculator"
+require_relative "retirement/statistics"
 require_relative "retirement/asset_class"
 require_relative "retirement/portfolio"
 require_relative "retirement/formatter"
