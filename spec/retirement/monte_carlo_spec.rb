@@ -11,7 +11,8 @@ RSpec.describe Retirement::MonteCarlo do
       return_rate: 0.07,
     }
   end
-  let(:mc) { described_class.new(scenario, volatility: 0.15) }
+  let(:scenario_with_vol) { scenario.merge(volatility: 0.15) }
+  let(:mc) { described_class.new(scenario_with_vol) }
 
   describe "#run" do
     it "returns one entry per year" do

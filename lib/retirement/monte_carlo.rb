@@ -2,19 +2,19 @@
 
 module Retirement
   # Runs Monte Carlo simulations over a retirement scenario.
-  # Randomizes annual return rate using a normal distribution
-  # to model market volatility, then aggregates percentile
-  # outcomes across all trials.
+  # When given a Portfolio, uses per-asset return/volatility.
+  # Falls back to scenario-level return_rate and volatility.
   class MonteCarlo
+    include Statistics
+
     DEFAULT_TRIALS = 1_000
     DEFAULT_YEARS = 30
-    DEFAULT_VOLATILITY = 0.15
 
-    attr_reader :scenario, :volatility
+    attr_reader :scenario, :portfolio
 
-    def initialize(scenario, volatility: DEFAULT_VOLATILITY)
+    def initialize(scenario, portfolio: nil)
       @scenario = scenario
-      @volatility = volatility
+      @portfolio = portfolio
     end
 
     def run(trials: DEFAULT_TRIALS, years: DEFAULT_YEARS)
@@ -30,17 +30,25 @@ module Retirement
     end
 
     def step(balance)
-      (balance * (1.0 + random_return)) + net_income
+      (balance * (1.0 + portfolio_return)) + net_income
     end
 
-    def random_return
-      scenario[:return_rate] + (volatility * gaussian)
+    def portfolio_return
+      return simple_return unless portfolio
+
+      portfolio.allocations.sum do |asset, weight|
+        weight * asset_return(asset)
+      end
     end
 
-    def gaussian
-      u1 = rand
-      u2 = rand
-      Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math::PI * u2)
+    def simple_return
+      rate = scenario[:return_rate] || 0.07
+      vol = scenario[:volatility] || 0.15
+      rate + (vol * gaussian)
+    end
+
+    def asset_return(asset)
+      asset.expected_return + (asset.volatility * gaussian)
     end
 
     def net_income
@@ -50,23 +58,18 @@ module Retirement
 
     def summarize(results, years)
       Array.new(years) do |yi|
-        year_balances = results.map { |r| r[yi] }.sort
-        build_percentiles(yi + 1, year_balances)
+        year_vals = results.map { |r| r[yi] }.sort
+        build_percentiles(yi + 1, year_vals)
       end
     end
 
     def build_percentiles(year, sorted)
       {
         year: year,
-        p10: pct(sorted, 10),
-        p50: pct(sorted, 50),
-        p90: pct(sorted, 90),
+        p10: percentile(sorted, 10),
+        p50: percentile(sorted, 50),
+        p90: percentile(sorted, 90),
       }
-    end
-
-    def pct(sorted, percentile)
-      idx = (percentile / 100.0 * sorted.length).ceil - 1
-      sorted[[idx, 0].max].round(2)
     end
   end
 end
