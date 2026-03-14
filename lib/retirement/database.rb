@@ -21,6 +21,9 @@ module Retirement
         Numeric :annual_income, default: 0
         Numeric :annual_expenses, default: 0
         Float :return_rate, default: 0.07
+        Float :inflation_rate, default: 0.03
+        Float :drawdown_percent, default: 0.0
+        Numeric :drawdown_fixed, default: 0
       end
     end
 

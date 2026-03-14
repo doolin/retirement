@@ -11,6 +11,12 @@ module Retirement
   class Web < Sinatra::Base
     set :views, File.join(__dir__, "views")
 
+    helpers do
+      def commify(number)
+        number.to_f.round(0).to_i.to_s.gsub(/(\d)(?=(\d{3})+(?!\d))/, '\\1,')
+      end
+    end
+
     get "/" do
       erb :index
     end

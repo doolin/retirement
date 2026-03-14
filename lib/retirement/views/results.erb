@@ -2,13 +2,13 @@
 
 <h2><%= scenario[:name] %></h2>
 <p class="legend">
-  Savings: $<%= format("%<v>,.0f", v: scenario[:savings]) %> |
-  Income: $<%= format("%<v>,.0f", v: scenario[:annual_income]) %> |
-  Expenses: $<%= format("%<v>,.0f", v: scenario[:annual_expenses]) %>
+  Savings: $<%= commify(scenario[:savings]) %> |
+  Income: $<%= commify(scenario[:annual_income]) %> |
+  Expenses: $<%= commify(scenario[:annual_expenses]) %>
   <br>Inflation: <%= (scenario[:inflation_rate] * 100).round(1) %>% |
   Drawdown: <%= (scenario[:drawdown_percent] * 100).round(1) %>%
   <% if scenario[:drawdown_fixed] > 0 %>
-    + $<%= format("%<v>,.0f", v: scenario[:drawdown_fixed]) %>/yr
+    + $<%= commify(scenario[:drawdown_fixed]) %>/yr
   <% end %>
   <% if portfolio %>
     <br>Portfolio: <%= portfolio.describe.map { |a| "#{a[:name]} #{(a[:weight] * 100).round}%" }.join(", ") %>
@@ -37,19 +37,19 @@
 
 <div class="summary-cards">
   <div class="card">
-    <div class="value">$<%= format("%<v>,.0f", v: final_det) %></div>
+    <div class="value">$<%= commify(final_det) %></div>
     <div class="label">Deterministic Final</div>
   </div>
   <div class="card">
-    <div class="value">$<%= format("%<v>,.0f", v: final_p50) %></div>
+    <div class="value">$<%= commify(final_p50) %></div>
     <div class="label">Monte Carlo Median</div>
   </div>
   <div class="card">
-    <div class="value">$<%= format("%<v>,.0f", v: final_p10) %></div>
+    <div class="value">$<%= commify(final_p10) %></div>
     <div class="label">Worst 10%</div>
   </div>
   <div class="card">
-    <div class="value">$<%= format("%<v>,.0f", v: final_p90) %></div>
+    <div class="value">$<%= commify(final_p90) %></div>
     <div class="label">Best 10%</div>
   </div>
 </div>
@@ -79,7 +79,7 @@
       <% projections.order(:year).each do |row| %>
         <tr>
           <td><%= row[:year] %></td>
-          <td class="highlight">$<%= format("%<v>,.0f", v: row[:balance].to_f) %></td>
+          <td class="highlight">$<%= commify(row[:balance]) %></td>
         </tr>
       <% end %>
     </table>
@@ -91,9 +91,9 @@
       <% monte_carlo.each do |row| %>
         <tr>
           <td><%= row[:year] %></td>
-          <td>$<%= format("%<v>,.0f", v: row[:p10]) %></td>
-          <td class="highlight">$<%= format("%<v>,.0f", v: row[:p50]) %></td>
-          <td>$<%= format("%<v>,.0f", v: row[:p90]) %></td>
+          <td>$<%= commify(row[:p10]) %></td>
+          <td class="highlight">$<%= commify(row[:p50]) %></td>
+          <td>$<%= commify(row[:p90]) %></td>
         </tr>
       <% end %>
     </table>
