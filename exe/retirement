@@ -3,4 +3,19 @@
 
 require "retirement"
 
+db = Retirement::Database.connect
+
+scenario_id = db[:scenarios].insert(
+  name: "default",
+  savings: 500_000,
+  annual_income: 80_000,
+  annual_expenses: 50_000,
+  return_rate: 0.07,
+)
+
+calc = Retirement::Calculator.new(db, scenario_id)
+results = calc.project
+
 puts "Retirement Calculator v#{Retirement::VERSION}"
+puts
+puts Retirement::Formatter.new(results)
