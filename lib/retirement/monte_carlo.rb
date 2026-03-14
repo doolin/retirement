@@ -2,10 +2,12 @@
 
 module Retirement
   # Runs Monte Carlo simulations over a retirement scenario.
-  # When given a Portfolio, uses per-asset return/volatility.
-  # Falls back to scenario-level return_rate and volatility.
+  # Supports portfolio-based returns, inflation adjustment,
+  # and configurable drawdown (percent or fixed).
   class MonteCarlo
     include Statistics
+    include Drawdown
+    include Returns
 
     DEFAULT_TRIALS = 1_000
     DEFAULT_YEARS = 30
@@ -26,29 +28,20 @@ module Retirement
 
     def simulate(years)
       balance = scenario[:savings].to_f
-      Array.new(years) { balance = step(balance) }
-    end
-
-    def step(balance)
-      (balance * (1.0 + portfolio_return)) + net_income
-    end
-
-    def portfolio_return
-      return simple_return unless portfolio
-
-      portfolio.allocations.sum do |asset, weight|
-        weight * asset_return(asset)
+      Array.new(years) do |yr|
+        balance = step(balance, yr)
       end
     end
 
-    def simple_return
-      rate = scenario[:return_rate] || 0.07
-      vol = scenario[:volatility] || 0.15
-      rate + (vol * gaussian)
+    def step(balance, year)
+      growth = balance * (1.0 + year_return(scenario, portfolio))
+      adjusted_dd = adjusted_drawdown(balance, year)
+      growth - adjusted_dd + net_income
     end
 
-    def asset_return(asset)
-      asset.expected_return + (asset.volatility * gaussian)
+    def adjusted_drawdown(balance, year)
+      compute_drawdown(balance, scenario) *
+        inflation_factor(year, scenario)
     end
 
     def net_income
@@ -58,18 +51,11 @@ module Retirement
 
     def summarize(results, years)
       Array.new(years) do |yi|
-        year_vals = results.map { |r| r[yi] }.sort
-        build_percentiles(yi + 1, year_vals)
+        sorted = results.map { |r| r[yi] }.sort
+        pcts = { p10: 10, p50: 50, p90: 90 }
+        pcts.transform_values! { |v| percentile(sorted, v) }
+        pcts.merge(year: yi + 1)
       end
-    end
-
-    def build_percentiles(year, sorted)
-      {
-        year: year,
-        p10: percentile(sorted, 10),
-        p50: percentile(sorted, 50),
-        p90: percentile(sorted, 90),
-      }
     end
   end
 end
