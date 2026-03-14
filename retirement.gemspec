@@ -13,11 +13,12 @@ Gem::Specification.new do |spec|
   spec.required_ruby_version = ">= 4.0"
   spec.metadata["rubygems_mfa_required"] = "true"
 
-  spec.files = Dir.glob("{lib,exe}/**/*") + %w[README.md]
+  spec.files = Dir.glob("{lib,exe}/**/*") + %w[README.md config.ru]
   spec.bindir = "exe"
   spec.executables = spec.files.grep(%r{\Aexe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
+  spec.add_dependency "puma", "~> 7.0"
   spec.add_dependency "sequel", "~> 5.0"
   spec.add_dependency "sinatra", "~> 4.0"
   spec.add_dependency "sqlite3", "~> 2.0"
