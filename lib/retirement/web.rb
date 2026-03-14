@@ -16,42 +16,30 @@ module Retirement
     end
 
     post "/calculate" do
-      db = Database.connect
-      scenario_data = build_scenario(params)
-      scenario_id = db[:scenarios].insert(scenario_data)
-      calc = Calculator.new(db, scenario_id)
-      projections = calc.project
-
-      portfolio = resolve_portfolio(params[:portfolio])
-      mc = MonteCarlo.new(scenario_data, portfolio: portfolio)
-      mc_results = mc.run(trials: 1_000, years: 30)
-
-      erb :results, locals: {
-        scenario: scenario_data,
-        projections: projections,
-        monte_carlo: mc_results,
-        portfolio: portfolio,
-      }
+      builder = ScenarioBuilder.new(params)
+      results = run_projections(builder)
+      erb :results, locals: results
     end
 
     private
 
-    def build_scenario(params)
-      {
-        name: params[:name] || "custom",
-        savings: params[:savings].to_f,
-        annual_income: params[:annual_income].to_f,
-        annual_expenses: params[:annual_expenses].to_f,
-        return_rate: params[:return_rate].to_f,
-      }
+    def run_projections(builder)
+      scenario = builder.scenario
+      projections = deterministic(scenario, builder.years)
+      mc = monte_carlo(scenario, builder)
+      { scenario: scenario, projections: projections,
+        monte_carlo: mc, portfolio: builder.portfolio }
     end
 
-    def resolve_portfolio(name)
-      case name
-      when "aggressive" then Portfolio.aggressive
-      when "moderate" then Portfolio.moderate
-      when "conservative" then Portfolio.conservative
-      end
+    def deterministic(scenario, years)
+      db = Database.connect
+      sid = db[:scenarios].insert(scenario)
+      Calculator.new(db, sid).project(years: years)
+    end
+
+    def monte_carlo(scenario, builder)
+      mc = MonteCarlo.new(scenario, portfolio: builder.portfolio)
+      mc.run(trials: 1_000, years: builder.years)
     end
   end
 end
