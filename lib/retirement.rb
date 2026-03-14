@@ -4,6 +4,7 @@ require_relative "retirement/version"
 require_relative "retirement/database"
 require_relative "retirement/calculator"
 require_relative "retirement/formatter"
+require_relative "retirement/monte_carlo"
 
 # Retirement financial planning calculator.
 module Retirement
