@@ -1,0 +1,38 @@
+<a href="/" class="back">&larr; New Scenario</a>
+
+<h2>Scenario: <%= scenario[:name] %></h2>
+<p class="legend">
+  Savings: $<%= format("%<v>.0f", v: scenario[:savings]) %> |
+  Income: $<%= format("%<v>.0f", v: scenario[:annual_income]) %> |
+  Expenses: $<%= format("%<v>.0f", v: scenario[:annual_expenses]) %>
+  <% if portfolio %>
+    <br>Portfolio: <%= portfolio.describe.map { |a| "#{a[:name]} #{(a[:weight] * 100).round}%" }.join(", ") %>
+  <% end %>
+</p>
+
+<h2>Deterministic Projection</h2>
+<table>
+  <tr><th>Year</th><th>Balance</th><th>Income</th><th>Expenses</th></tr>
+  <% projections.order(:year).each do |row| %>
+    <tr>
+      <td><%= row[:year] %></td>
+      <td class="highlight">$<%= format("%<v>,.0f", v: row[:balance].to_f) %></td>
+      <td>$<%= format("%<v>,.0f", v: row[:income].to_f) %></td>
+      <td>$<%= format("%<v>,.0f", v: row[:expenses].to_f) %></td>
+    </tr>
+  <% end %>
+</table>
+
+<h2>Monte Carlo Simulation (1,000 trials)</h2>
+<p class="legend">P10 = worst 10%, P50 = median, P90 = best 10%</p>
+<table>
+  <tr><th>Year</th><th>P10</th><th>P50</th><th>P90</th></tr>
+  <% monte_carlo.each do |row| %>
+    <tr>
+      <td><%= row[:year] %></td>
+      <td>$<%= format("%<v>,.0f", v: row[:p10]) %></td>
+      <td class="highlight">$<%= format("%<v>,.0f", v: row[:p50]) %></td>
+      <td>$<%= format("%<v>,.0f", v: row[:p90]) %></td>
+    </tr>
+  <% end %>
+</table>
