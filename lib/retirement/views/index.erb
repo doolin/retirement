@@ -1,4 +1,5 @@
 <form method="post" action="/calculate">
+  <h2>Basic Info</h2>
   <label>Scenario Name
     <input type="text" name="name" value="My Plan">
   </label>
@@ -15,18 +16,47 @@
     <input type="number" name="annual_expenses" value="50000" step="1000">
   </label>
 
+  <label>Projection Years
+    <input type="number" name="years" value="30" min="1" max="50">
+  </label>
+
+  <h2>Asset Allocation (%)</h2>
+  <p class="legend">Must total 100%. Leave all at 0 to use simple return rate below.</p>
+  <div class="grid">
+    <label>US Stocks
+      <input type="number" name="alloc_stocks" value="40" min="0" max="100">
+    </label>
+    <label>International Stocks
+      <input type="number" name="alloc_intl" value="15" min="0" max="100">
+    </label>
+    <label>Bonds
+      <input type="number" name="alloc_bonds" value="30" min="0" max="100">
+    </label>
+    <label>Real Estate (REITs)
+      <input type="number" name="alloc_real_estate" value="15" min="0" max="100">
+    </label>
+    <label>Cash / Money Market
+      <input type="number" name="alloc_cash" value="0" min="0" max="100">
+    </label>
+  </div>
+
+  <h2>Simple Return (if no allocation)</h2>
   <label>Expected Return Rate
     <input type="number" name="return_rate" value="0.07" step="0.01" min="0" max="0.30">
   </label>
 
-  <label>Portfolio Allocation
-    <select name="portfolio">
-      <option value="">None (use return rate above)</option>
-      <option value="aggressive">Aggressive (70% stocks, 20% intl, 10% bonds)</option>
-      <option value="moderate" selected>Moderate (40% stocks, 30% bonds, 15% RE, 15% intl)</option>
-      <option value="conservative">Conservative (50% bonds, 20% stocks, 20% cash, 10% RE)</option>
-    </select>
+  <h2>Inflation</h2>
+  <label>Annual Inflation Rate
+    <input type="number" name="inflation_rate" value="0.03" step="0.005" min="0" max="0.20">
   </label>
 
-  <button type="submit">Calculate 30-Year Projection</button>
+  <h2>Drawdown (Retirement Withdrawals)</h2>
+  <label>Drawdown % of Balance per Year
+    <input type="number" name="drawdown_percent" value="0.04" step="0.005" min="0" max="0.20">
+  </label>
+  <label>Fixed Annual Drawdown ($)
+    <input type="number" name="drawdown_fixed" value="0" step="1000" min="0">
+  </label>
+
+  <button type="submit">Calculate Projection</button>
 </form>
