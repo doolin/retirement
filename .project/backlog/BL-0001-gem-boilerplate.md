@@ -2,7 +2,7 @@
 id: BL-0001
 title: Set up retirement gem boilerplate
 type: task
-status: in_progress
+status: done
 value: 5                   # foundational — everything depends on this
 effort: 2                  # well-understood structure
 urgency: 5                 # blocks all other work

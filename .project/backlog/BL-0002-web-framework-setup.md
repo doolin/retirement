@@ -2,7 +2,7 @@
 id: BL-0002
 title: Choose and set up web framework
 type: spike
-status: backlog
+status: done
 value: 4                   # needed for the web UI, core deliverable
 effort: 3                  # framework choice + wiring + config
 urgency: 2                 # not blocking until gem core exists
