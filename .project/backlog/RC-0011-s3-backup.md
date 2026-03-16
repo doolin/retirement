@@ -1,5 +1,5 @@
 ---
-id: BL-0011
+id: RC-0011
 title: Add S3 backup for SQLite database
 type: story
 status: backlog
@@ -13,7 +13,7 @@ created: 2026-03-14
 updated: 2026-03-14
 completed:
 parent: null
-depends_on: [BL-0010]
+depends_on: [RC-0010]
 area: infrastructure
 adr_refs: []
 links: []
@@ -43,7 +43,7 @@ configured S3 bucket, and can restore from the latest backup.
 
 - Upload the entire encrypted DB file — it's small.
 - Version the uploads with timestamps in the S3 key.
-- Depends on BL-0010 for on-disk storage.
+- Depends on RC-0010 for on-disk storage.
 
 ## LLM Context
 

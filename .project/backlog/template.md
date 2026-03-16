@@ -1,5 +1,5 @@
 ---
-id: BL-0000
+id: RC-0000
 title: Short imperative title
 type: task                 # task | bug | spike | story | epic
 status: backlog            # backlog | ready | in_progress | blocked | done

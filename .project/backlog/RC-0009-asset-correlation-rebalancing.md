@@ -1,5 +1,5 @@
 ---
-id: BL-0009
+id: RC-0009
 title: Add asset class correlation and portfolio rebalancing
 type: story
 status: backlog
@@ -48,7 +48,7 @@ annually back to target allocations.
   Stocks/Bonds ~-0.2, Stocks/REITs ~0.6, Stocks/Intl ~0.8
 - Cholesky decomposition of the correlation matrix transforms
   independent gaussian draws into correlated ones.
-- Rebalancing has tax implications (see BL-0005) — ignore for now.
+- Rebalancing has tax implications (see RC-0005) — ignore for now.
 
 ## LLM Context
 

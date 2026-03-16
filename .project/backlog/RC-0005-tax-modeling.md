@@ -1,5 +1,5 @@
 ---
-id: BL-0005
+id: RC-0005
 title: Add basic tax modeling for retirement accounts
 type: story
 status: backlog
@@ -44,7 +44,7 @@ and the calculator applies estimated effective tax rates to withdrawals.
 
 - Start with a simple effective rate, not full bracket modeling.
 - Could add bracket modeling as a future enhancement.
-- RMDs (BL-0006) depend on this ticket's account type distinction.
+- RMDs (RC-0006) depend on this ticket's account type distinction.
 
 ## LLM Context
 

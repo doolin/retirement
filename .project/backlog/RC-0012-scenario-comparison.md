@@ -1,5 +1,5 @@
 ---
-id: BL-0012
+id: RC-0012
 title: Add scenario comparison view
 type: story
 status: backlog
@@ -13,7 +13,7 @@ created: 2026-03-14
 updated: 2026-03-14
 completed:
 parent: null
-depends_on: [BL-0010]
+depends_on: [RC-0010]
 area: ui
 adr_refs: []
 links: []
@@ -44,7 +44,7 @@ overlaid on the same charts and tables.
 
 - Limit to 2-3 scenarios for readability.
 - Color-code each scenario consistently across charts.
-- Depends on BL-0010 for saved scenarios.
+- Depends on RC-0010 for saved scenarios.
 
 ## LLM Context
 

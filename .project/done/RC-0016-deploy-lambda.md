@@ -1,9 +1,9 @@
 ---
-id: BL-0016
+id: RC-0016
 title: Deploy Sinatra app to AWS Lambda
 type: task
 status: done
-value: 5                   # enables remote access, unblocks BL-0003
+value: 5                   # enables remote access, unblocks RC-0003
 effort: 3                  # new infra, packaging, SAM/CF template
 urgency: 4                 # user wants it now
 risk: 2                    # well-trodden path with lamby/rack adapters
@@ -44,7 +44,7 @@ an S3 bucket for deployment artifacts.
 
 - User will provide the S3 bucket name for deployment artifacts.
 - Sinatra app is in `lib/retirement/web.rb`, entry point is `config.ru`.
-- SQLite won't persist on Lambda; persistence (BL-0010) is a separate concern.
+- SQLite won't persist on Lambda; persistence (RC-0010) is a separate concern.
 - Consider using `lamby` gem for clean Rack-to-Lambda integration.
 - Lambda has a 250 MB unzipped package limit; native gems (sqlite3) need
   a Lambda-compatible build (x86_64-linux or provided.al2023).

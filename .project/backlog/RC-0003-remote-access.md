@@ -1,5 +1,5 @@
 ---
-id: BL-0003
+id: RC-0003
 title: Enable remote device access to local app
 type: spike
 status: backlog
@@ -13,7 +13,7 @@ created: 2026-03-14
 updated: 2026-03-14
 completed:
 parent: null
-depends_on: [BL-0002]
+depends_on: [RC-0002]
 area: infrastructure
 adr_refs: []
 links: []

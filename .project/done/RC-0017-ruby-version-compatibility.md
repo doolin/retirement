@@ -1,5 +1,5 @@
 ---
-id: BL-0017
+id: RC-0017
 title: Set Ruby version to Lambda-compatible 3.3
 type: bug
 status: done

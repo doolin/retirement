@@ -1,5 +1,5 @@
 ---
-id: BL-0010
+id: RC-0010
 title: Persist scenarios to encrypted SQLite on disk
 type: story
 status: backlog

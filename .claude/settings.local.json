@@ -4,7 +4,9 @@
       "Bash(bundle exec rspec)",
       "Bash(bundle exec rubocop)",
       "Bash(ruby /Users/daviddoolin/src/retirement/exe/retirement)",
-      "Bash(bundle exec ruby /Users/daviddoolin/src/retirement/exe/retirement)"
+      "Bash(bundle exec ruby /Users/daviddoolin/src/retirement/exe/retirement)",
+      "Bash(grep:*)",
+      "Bash(sed:*)"
     ]
   }
 }

@@ -1,5 +1,5 @@
 ---
-id: BL-0001
+id: RC-0001
 title: Set up retirement gem boilerplate
 type: task
 status: done
@@ -49,7 +49,7 @@ and executable examples can be run from the command line.
 
 - Gemfile will be replaced with a stub: `gemspec` directive plus a
   dev/test group (rspec, rubocop, simplecov). Rails, sinatra, and
-  rspec-rails are punted to BL-0002.
+  rspec-rails are punted to RC-0002.
 - Ruby 4.0.1 per `.ruby-version`, bundler 4.0.3 per `Gemfile.lock`.
 - Keep the gemspec minimal; add runtime deps only as needed by later tickets.
 

@@ -1,5 +1,5 @@
 ---
-id: BL-0006
+id: RC-0006
 title: Implement required minimum distributions (RMDs)
 type: story
 status: backlog
@@ -13,7 +13,7 @@ created: 2026-03-14
 updated: 2026-03-14
 completed:
 parent: null
-depends_on: [BL-0005]
+depends_on: [RC-0005]
 area: financial-model
 adr_refs: []
 links: []
@@ -42,7 +42,7 @@ based on the IRS Uniform Lifetime Table.
 
 ## Notes
 
-- Depends on BL-0005 for pre-tax account separation.
+- Depends on RC-0005 for pre-tax account separation.
 - Table divisors: age 73 = 26.5, age 80 = 20.2, age 90 = 12.2, etc.
 - Roth accounts are exempt from RMDs (SECURE 2.0).
 

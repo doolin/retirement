@@ -1,5 +1,5 @@
 ---
-id: BL-0002
+id: RC-0002
 title: Choose and set up web framework
 type: spike
 status: done
@@ -13,7 +13,7 @@ created: 2026-02-28
 updated: 2026-02-28
 completed:
 parent: null
-depends_on: [BL-0001]
+depends_on: [RC-0001]
 area: infrastructure
 adr_refs: []
 links: []
@@ -24,7 +24,7 @@ labels: [setup, web, framework]
 
 The retirement calculator is a web application. We need to pick a
 framework (Rails, Sinatra, or both) and wire it into the gem
-structure established by BL-0001.
+structure established by RC-0001.
 
 ## Outcome
 
@@ -52,6 +52,6 @@ integrated into the gem layout with appropriate test support.
 ## LLM Context
 
 - Files likely affected: `Gemfile`, `retirement.gemspec`, `config/`, `app/`, `spec/`
-- Invariants to preserve: gem structure from BL-0001, RSpec + SimpleCov + RuboCop setup
+- Invariants to preserve: gem structure from RC-0001, RSpec + SimpleCov + RuboCop setup
 - Style constraints: match whatever conventions the chosen framework expects
 - Known traps: Rails generators may overwrite gem boilerplate files — run with care

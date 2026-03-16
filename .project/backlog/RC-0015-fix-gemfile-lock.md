@@ -1,5 +1,5 @@
 ---
-id: BL-0015
+id: RC-0015
 title: Fix stale Gemfile.lock and CI Ruby version
 type: bug
 status: backlog

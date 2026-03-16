@@ -1,5 +1,5 @@
 ---
-id: BL-0007
+id: RC-0007
 title: Support time-varying income and expenses
 type: story
 status: backlog

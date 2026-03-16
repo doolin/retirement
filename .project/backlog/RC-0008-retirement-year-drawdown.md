@@ -1,5 +1,5 @@
 ---
-id: BL-0008
+id: RC-0008
 title: Start drawdown at retirement year, not year 1
 type: bug
 status: backlog
@@ -44,7 +44,7 @@ year, drawdown is zero. After, the configured percent/fixed applies.
 
 - High priority — this is a correctness issue, not a feature.
 - Income should also drop to zero at retirement unless Social Security
-  or pension kicks in (see BL-0004, BL-0007).
+  or pension kicks in (see RC-0004, RC-0007).
 
 ## LLM Context
 

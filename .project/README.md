@@ -13,10 +13,10 @@ Retirement Calculator.
 
 ### IDs and Filenames
 
-Sequential numbering: **BL-0001**, **BL-0002**, etc. All ticket types
+Sequential numbering: **RC-0001**, **RC-0002**, etc. All ticket types
 share one sequence.
 
-Ticket filename includes the ID: `BL-0001-short-title.md`. This makes
+Ticket filename includes the ID: `RC-0001-short-title.md`. This makes
 tickets findable by glob without reading frontmatter.
 
 ### Types
