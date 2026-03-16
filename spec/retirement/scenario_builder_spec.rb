@@ -43,11 +43,60 @@ RSpec.describe Retirement::ScenarioBuilder do
       names = builder.portfolio.describe.map { |a| a[:name] }
       expect(names.include?("Cash/Money Market")).to be(false)
     end
+
+    it "returns nil when allocations do not sum to 100%" do
+      bad_params = params.merge(alloc_stocks: "200", alloc_bonds: "0")
+      expect(described_class.new(bad_params).portfolio).to be_nil
+    end
+
+    it "does not raise on mangled allocation payloads" do
+      bad_params = params.merge(
+        alloc_stocks: { nested: "40" },
+        alloc_bonds: ["30"],
+        alloc_real_estate: "Infinity",
+      )
+      expect { described_class.new(bad_params).portfolio }.not_to raise_error
+    end
   end
 
   describe "#years" do
     it "returns the projection years" do
       expect(builder.years).to eq(25)
+    end
+
+    it "falls back to defaults for invalid values" do
+      expect(described_class.new(params.merge(years: nil)).years).to eq(30)
+      expect(described_class.new(params.merge(years: "bad")).years).to eq(30)
+    end
+
+    it "clamps years into a safe range" do
+      expect(described_class.new(params.merge(years: "-50")).years).to eq(1)
+      expect(described_class.new(params.merge(years: "10000")).years).to eq(100)
+    end
+  end
+
+  describe "mangled numeric inputs" do
+    it "sanitizes malformed values without crashing" do
+      fuzz_params = {
+        name: { bad: true },
+        savings: "NaN",
+        annual_income: ["oops"],
+        annual_expenses: { nested: "x" },
+        return_rate: "Infinity",
+        inflation_rate: "-99",
+        drawdown_percent: "2.5",
+        drawdown_fixed: "-1000",
+      }
+
+      scenario = described_class.new(fuzz_params).scenario
+      expect(scenario[:savings]).to eq(0.0)
+      expect(scenario[:annual_income]).to eq(0.0)
+      expect(scenario[:annual_expenses]).to eq(0.0)
+      expect(scenario[:return_rate]).to eq(0.07)
+      expect(scenario[:inflation_rate]).to eq(-0.5)
+      expect(scenario[:drawdown_percent]).to eq(1.0)
+      expect(scenario[:drawdown_fixed]).to eq(0.0)
+      expect(scenario[:name]).not_to be_nil
     end
   end
 end

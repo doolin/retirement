@@ -6,6 +6,7 @@ module Retirement
   # and subtracts expenses to compute the ending balance.
   class Calculator
     DEFAULT_YEARS = 30
+    MAX_YEARS = 100
 
     attr_reader :db, :scenario
 
@@ -16,7 +17,8 @@ module Retirement
 
     def project(years: DEFAULT_YEARS)
       balance = scenario[:savings].to_f
-      years.times { |i| balance = project_year(i, balance) }
+      safe_years = coerce_years(years)
+      safe_years.times { |i| balance = project_year(i, balance) }
       db[:projections].where(scenario_id: scenario[:id])
     end
 
@@ -42,6 +44,14 @@ module Retirement
         income: scenario[:annual_income],
         expenses: scenario[:annual_expenses],
       )
+    end
+
+    def coerce_years(value)
+      years = value.to_i
+      years = DEFAULT_YEARS if years <= 0
+      [years, MAX_YEARS].min
+    rescue StandardError
+      DEFAULT_YEARS
     end
   end
 end

@@ -17,13 +17,23 @@ module Retirement
     private
 
     def simple_return(scenario)
-      rate = scenario[:return_rate] || 0.07
-      vol = scenario[:volatility] || 0.15
+      rate = coerce_float(scenario[:return_rate], 0.07)
+      vol = coerce_float(scenario[:volatility], 0.15)
+      vol = [vol, 0.0].max
       rate + (vol * gaussian)
     end
 
     def asset_return(asset)
       asset.expected_return + (asset.volatility * gaussian)
+    end
+
+    def coerce_float(value, default)
+      return value.to_f if value.is_a?(Numeric) && value.finite?
+
+      coerced = value.to_f
+      coerced.finite? ? coerced : default
+    rescue StandardError
+      default
     end
   end
 end

@@ -35,5 +35,25 @@ RSpec.describe Retirement::MonteCarlo do
       deterministic = (100_000 * 1.07) + 20_000
       expect(row[:p50]).to be_within(5_000).of(deterministic)
     end
+
+    it "coerces invalid trials and years safely" do
+      results = mc.run(trials: "bad", years: -10)
+      expect(results.length).to eq(30)
+    end
+
+    it "handles non-finite scenario fields" do
+      bad = {
+        savings: 100_000,
+        annual_income: 0,
+        annual_expenses: 0,
+        return_rate: "NaN",
+        volatility: "Infinity",
+      }
+      fuzz_mc = described_class.new(bad)
+      row = fuzz_mc.run(trials: 100, years: 1).first
+      expect(row[:p10].finite?).to be(true)
+      expect(row[:p50].finite?).to be(true)
+      expect(row[:p90].finite?).to be(true)
+    end
   end
 end

@@ -11,6 +11,8 @@ module Retirement
 
     DEFAULT_TRIALS = 1_000
     DEFAULT_YEARS = 30
+    MAX_TRIALS = 20_000
+    MAX_YEARS = 100
 
     attr_reader :scenario, :portfolio
 
@@ -20,8 +22,10 @@ module Retirement
     end
 
     def run(trials: DEFAULT_TRIALS, years: DEFAULT_YEARS)
-      results = Array.new(trials) { simulate(years) }
-      summarize(results, years)
+      safe_trials = coerce_positive_int(trials, default: DEFAULT_TRIALS, max: MAX_TRIALS)
+      safe_years = coerce_positive_int(years, default: DEFAULT_YEARS, max: MAX_YEARS)
+      results = Array.new(safe_trials) { simulate(safe_years) }
+      summarize(results, safe_years)
     end
 
     private
@@ -56,6 +60,14 @@ module Retirement
         pcts.transform_values! { |v| percentile(sorted, v) }
         pcts.merge(year: yi + 1)
       end
+    end
+
+    def coerce_positive_int(value, default:, max:)
+      int_value = value.to_i
+      int_value = default if int_value <= 0
+      [int_value, max].min
+    rescue StandardError
+      default
     end
   end
 end

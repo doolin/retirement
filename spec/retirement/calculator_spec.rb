@@ -15,6 +15,17 @@ RSpec.describe Retirement::Calculator do
   end
   let(:calculator) { described_class.new(db, scenario_id) }
 
+  def project_count_for(years)
+    sid = db[:scenarios].insert(
+      name: "baseline",
+      savings: 100_000,
+      annual_income: 60_000,
+      annual_expenses: 40_000,
+      return_rate: 0.07,
+    )
+    described_class.new(db, sid).project(years: years).count
+  end
+
   describe "#project" do
     it "generates 30 years by default" do
       results = calculator.project
@@ -41,6 +52,12 @@ RSpec.describe Retirement::Calculator do
       end
 
       expect(balances[1]).to be > balances[0]
+    end
+
+    it "coerces malformed years to safe defaults" do
+      expect(project_count_for("oops")).to eq(30)
+      expect(project_count_for(-100)).to eq(30)
+      expect(project_count_for(1000)).to eq(100)
     end
   end
 end

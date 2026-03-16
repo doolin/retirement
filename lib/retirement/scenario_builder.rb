@@ -3,10 +3,13 @@
 module Retirement
   # Builds scenario hash and portfolio from form params.
   class ScenarioBuilder
+    DEFAULT_YEARS = 30
+    MAX_YEARS = 100
+
     attr_reader :params
 
     def initialize(params)
-      @params = params
+      @params = params.is_a?(Hash) ? params : {}
     end
 
     def scenario
@@ -15,13 +18,17 @@ module Retirement
 
     def portfolio
       allocs = allocation_map
-      return nil if allocs.values.sum < 0.01
+      total = allocs.values.sum
+      return nil if total < 0.01
+      return nil unless (total - 1.0).abs < 0.001
 
       Portfolio.new(allocs)
+    rescue ArgumentError
+      nil
     end
 
     def years
-      (params[:years] || 30).to_i
+      int(:years, default: DEFAULT_YEARS, min: 1, max: MAX_YEARS)
     end
 
     private
@@ -29,22 +36,25 @@ module Retirement
     def base_fields
       {
         name: params[:name] || "custom",
-        savings: float(:savings),
-        annual_income: float(:annual_income),
-        annual_expenses: float(:annual_expenses),
-        return_rate: float(:return_rate),
-        inflation_rate: float(:inflation_rate),
+        savings: float(:savings, min: 0.0),
+        annual_income: float(:annual_income, min: 0.0),
+        annual_expenses: float(:annual_expenses, min: 0.0),
+        return_rate: float(:return_rate, default: 0.07, min: -1.0, max: 1.0),
+        inflation_rate: float(:inflation_rate, min: -0.5, max: 1.0),
       }
     end
 
-    def float(key)
-      params[key].to_f
+    def float(key, default: 0.0, min: nil, max: nil)
+      value = to_float(params[key], default)
+      value = [value, min].max if min
+      value = [value, max].min if max
+      value
     end
 
     def drawdown_fields
       {
-        drawdown_percent: params[:drawdown_percent].to_f,
-        drawdown_fixed: params[:drawdown_fixed].to_f,
+        drawdown_percent: float(:drawdown_percent, min: 0.0, max: 1.0),
+        drawdown_fixed: float(:drawdown_fixed, min: 0.0),
       }
     end
 
@@ -59,7 +69,26 @@ module Retirement
     end
 
     def pct(key)
-      (params[key].to_f / 100.0).round(4)
+      (float(key, min: 0.0, max: 100.0) / 100.0).round(4)
+    end
+
+    def int(key, default:, min:, max:)
+      value = to_float(params[key], default).to_i
+      value = [value, min].max
+      [value, max].min
+    end
+
+    def to_float(value, default)
+      return default if value.nil?
+      return default if value.respond_to?(:strip) && value.strip.empty?
+      return value.to_f if value.is_a?(Numeric) && value.finite?
+
+      candidate = Float(value)
+      return default unless candidate.finite?
+
+      candidate
+    rescue StandardError
+      default
     end
   end
 end
