@@ -9,6 +9,9 @@ CF_DISTRIBUTION="ERIW60YQ29CKU"
 BUILD_DIR=".aws-sam/build/RetirementFunction"
 DEPLOY_ZIP="/tmp/retirement-deploy.zip"
 
+echo "==> Writing REVISION..."
+git rev-parse --short HEAD > REVISION
+
 echo "==> Packaging..."
 (cd "$BUILD_DIR" && zip -qr "$DEPLOY_ZIP" . -x '*.DS_Store')
 
