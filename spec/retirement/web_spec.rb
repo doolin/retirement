@@ -11,6 +11,13 @@ RSpec.describe Retirement::Web do
     described_class
   end
 
+  describe "GET /retirement" do
+    it "includes the clubstraylight shamrock link" do
+      get "/retirement"
+      expect(last_response.body.include?("clubstraylight.com")).to be(true)
+    end
+  end
+
   describe "POST /retirement/calculate" do
     it "handles mangled form payloads without 500 errors" do
       payload = {
