@@ -45,6 +45,75 @@ jobs:
             rubocop-results.txt
           retention-days: 90
 
+  deploy:
+    name: Deploy
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3"
+          bundler-cache: true
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: us-west-1
+
+      - name: Build and deploy
+        run: |
+          echo "==> Writing REVISION..."
+          git rev-parse --short HEAD > REVISION
+
+          echo "==> Bundling for production..."
+          BUILD_DIR="/tmp/retirement-lambda-build"
+          rm -rf "$BUILD_DIR"
+          mkdir -p "$BUILD_DIR"
+          cp -r Gemfile Gemfile.lock lib config.ru config.rb app.rb retirement.gemspec REVISION "$BUILD_DIR/"
+          cd "$BUILD_DIR"
+          bundle config set --local path vendor/bundle
+          bundle config set --local without 'development test'
+          bundle install --quiet
+          cd -
+
+          echo "==> Packaging..."
+          DEPLOY_ZIP="/tmp/retirement-deploy.zip"
+          (cd "$BUILD_DIR" && zip -qr "$DEPLOY_ZIP" . -x '*.DS_Store')
+
+          echo "==> Uploading to S3..."
+          aws s3 cp "$DEPLOY_ZIP" s3://retirement-deployments/retirement-deploy.zip --region us-west-1
+
+          echo "==> Updating Lambda..."
+          aws lambda update-function-code \
+            --function-name retirement \
+            --s3-bucket retirement-deployments \
+            --s3-key retirement-deploy.zip \
+            --region us-west-1 \
+            --query 'FunctionName' --output text
+
+          echo "==> Waiting for update..."
+          aws lambda wait function-updated \
+            --function-name retirement \
+            --region us-west-1
+
+          echo "==> Invalidating CloudFront cache..."
+          aws cloudfront create-invalidation \
+            --distribution-id ERIW60YQ29CKU \
+            --paths '/retirement*' \
+            --query 'Invalidation.Id' --output text
+
+          echo "==> Done."
+
   attest:
     name: Attest
     needs: test
