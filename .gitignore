@@ -1,3 +1,6 @@
 /coverage/
 /REVISION
 /.aws-sam/
+/scripts/node_modules/
+ci-artifacts.zip
+attestation.pdf

@@ -22,7 +22,98 @@ jobs:
           bundler-cache: true
 
       - name: Run RSpec
-        run: bundle exec rspec
+        run: |
+          set -o pipefail
+          COMMIT_SHA="${GITHUB_SHA:-$(git rev-parse HEAD)}"
+          { echo "# commit: ${COMMIT_SHA}"; echo "---"; } > rspec-results.txt
+          bundle exec rspec 2>&1 | tee -a rspec-results.txt
 
       - name: Run RuboCop
-        run: bundle exec rubocop
+        run: |
+          set -o pipefail
+          COMMIT_SHA="${GITHUB_SHA:-$(git rev-parse HEAD)}"
+          { echo "# commit: ${COMMIT_SHA}"; echo "---"; } > rubocop-results.txt
+          bundle exec rubocop 2>&1 | tee -a rubocop-results.txt
+
+      - name: Upload CI artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-artifacts
+          path: |
+            rspec-results.txt
+            rubocop-results.txt
+          retention-days: 90
+
+  attest:
+    name: Attest
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download CI artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: ci-artifacts
+          path: artifacts
+          merge-multiple: true
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install attest dependencies
+        run: cd scripts && npm ci || npm install
+
+      - name: Write Solana keypair
+        if: env.SOLANA_KEYPAIR != ''
+        env:
+          SOLANA_KEYPAIR: ${{ secrets.SOLANA_KEYPAIR }}
+        run: |
+          KEYPAIR_FILE="$(mktemp)"
+          printf '%s' "$SOLANA_KEYPAIR" > "$KEYPAIR_FILE"
+          chmod 600 "$KEYPAIR_FILE"
+          echo "SOLANA_KEYPAIR_PATH=$KEYPAIR_FILE" >> "$GITHUB_ENV"
+
+      - name: Configure AWS credentials
+        if: env.AWS_ROLE_ARN != ''
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION || 'us-east-1' }}
+        env:
+          AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
+
+      - name: Run attestation
+        env:
+          ARTIFACT_DIR: artifacts
+          OUTPUT_DIR: artifacts
+          SOLANA_NETWORK: ${{ vars.SOLANA_NETWORK || 'devnet' }}
+          S3_COMPLIANCE_BUCKET: ${{ vars.S3_COMPLIANCE_BUCKET }}
+          AWS_REGION: ${{ vars.AWS_REGION || 'us-east-1' }}
+        run: node scripts/attest.mjs
+
+      - name: Cleanup keypair
+        if: always()
+        run: |
+          if [ -n "${SOLANA_KEYPAIR_PATH:-}" ] && [ -f "$SOLANA_KEYPAIR_PATH" ]; then
+            rm -f "$SOLANA_KEYPAIR_PATH"
+          fi
+
+      - name: Upload attestation artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: attestation
+          path: |
+            artifacts/ci-artifacts.zip
+            artifacts/attestation.pdf
+          retention-days: 90
