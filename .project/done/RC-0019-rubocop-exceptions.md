@@ -2,7 +2,7 @@
 id: RC-0019
 title: Add RuboCop exceptions to unblock CI
 type: task
-status: in_progress
+status: done
 value: 3
 effort: 1
 urgency: 5
@@ -11,7 +11,7 @@ score: 8.0
 owner: dave
 created: 2026-04-13
 updated: 2026-04-13
-completed:
+completed: 2026-04-13
 parent: RC-0018
 depends_on:
   - RC-0018

@@ -2,7 +2,7 @@
 id: RC-0020
 title: Write REVISION file at deploy time for SHA display
 type: task
-status: in_progress
+status: done
 value: 3
 effort: 1
 urgency: 3
@@ -11,7 +11,7 @@ score: 6.0
 owner: dave
 created: 2026-04-13
 updated: 2026-04-13
-completed:
+completed: 2026-04-13
 parent: null
 depends_on: []
 area: deploy

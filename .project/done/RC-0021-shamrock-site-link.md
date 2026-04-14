@@ -2,7 +2,7 @@
 id: RC-0021
 title: Add clubstraylight shamrock site link
 type: task
-status: in_progress
+status: done
 value: 2
 effort: 1
 urgency: 2
@@ -11,7 +11,7 @@ score: 4.0
 owner: dave
 created: 2026-04-13
 updated: 2026-04-13
-completed:
+completed: 2026-04-13
 parent: null
 depends_on: []
 area: ui
