@@ -15,8 +15,8 @@ require_relative "retirement/monte_carlo_formatter"
 
 # Retirement financial planning calculator.
 module Retirement
-  REVISION = if File.exist?(File.expand_path("../../REVISION", __dir__))
-               File.read(File.expand_path("../../REVISION", __dir__)).strip
+  REVISION = if File.exist?(File.expand_path("../REVISION", __dir__))
+               File.read(File.expand_path("../REVISION", __dir__)).strip
              elsif system("git rev-parse --short HEAD >/dev/null 2>&1")
                `git rev-parse --short HEAD`.strip
              end
