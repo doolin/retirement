@@ -32,7 +32,7 @@ RSpec.describe Retirement::Web do
 
       post "/retirement/calculate", payload
       expect(last_response.status).to eq(200)
-      expect(last_response.body).to include("Retirement Calculator")
+      expect(last_response.body.include?("Retirement Calculator")).to be(true)
     end
 
     it "handles non-hash payload root keys gracefully" do

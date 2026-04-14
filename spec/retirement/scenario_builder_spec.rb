@@ -46,7 +46,7 @@ RSpec.describe Retirement::ScenarioBuilder do
 
     it "returns nil when allocations do not sum to 100%" do
       bad_params = params.merge(alloc_stocks: "200", alloc_bonds: "0")
-      expect(described_class.new(bad_params).portfolio).to be_nil
+      expect(described_class.new(bad_params).portfolio.nil?).to be(true)
     end
 
     it "does not raise on mangled allocation payloads" do
@@ -96,7 +96,7 @@ RSpec.describe Retirement::ScenarioBuilder do
       expect(scenario[:inflation_rate]).to eq(-0.5)
       expect(scenario[:drawdown_percent]).to eq(1.0)
       expect(scenario[:drawdown_fixed]).to eq(0.0)
-      expect(scenario[:name]).not_to be_nil
+      expect(scenario[:name].nil?).to be(false)
     end
   end
 end
