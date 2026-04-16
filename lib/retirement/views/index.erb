@@ -16,9 +16,24 @@
     <input type="number" name="annual_expenses" value="50000" step="1000">
   </label>
 
+  <label>Current Age
+    <input type="number" name="current_age" value="65" min="18" max="120">
+  </label>
+
   <label>Projection Years
     <input type="number" name="years" value="30" min="1" max="50">
   </label>
+
+  <h2>Savings Breakdown</h2>
+  <p class="legend">Split your savings into pre-tax (Traditional IRA/401k) and Roth. RMDs apply to pre-tax only starting at age 73.</p>
+  <div class="grid">
+    <label>Pre-tax Savings ($)
+      <input type="number" name="pretax_savings" value="300000" step="1000" min="0">
+    </label>
+    <label>Roth Savings ($)
+      <input type="number" name="roth_savings" value="200000" step="1000" min="0">
+    </label>
+  </div>
 
   <h2>Asset Allocation (%)</h2>
   <p class="legend">Must total 100%. Leave all at 0 to use simple return rate below.</p>
