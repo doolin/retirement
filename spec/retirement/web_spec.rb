@@ -47,5 +47,17 @@ RSpec.describe Retirement::Web do
            "CONTENT_TYPE" => "application/x-www-form-urlencoded"
       expect(last_response.status).to eq(200)
     end
+
+    it "renders after-tax income columns" do
+      post "/retirement/calculate",
+           name: "tax", savings: "100000",
+           annual_income: "60000", annual_expenses: "40000",
+           return_rate: "0.05", inflation_rate: "0.02",
+           tax_rate: "0.25", years: "5"
+      expect(last_response.status).to eq(200)
+      expect(last_response.body.include?("Net/yr")).to be(true)
+      expect(last_response.body.include?("Net/mo")).to be(true)
+      expect(last_response.body.include?("Tax rate: 25.0%")).to be(true)
+    end
   end
 end
