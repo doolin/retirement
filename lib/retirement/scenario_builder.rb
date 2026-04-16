@@ -13,7 +13,7 @@ module Retirement
     end
 
     def scenario
-      base_fields.merge(drawdown_fields).merge(rmd_fields)
+      base_fields.merge(drawdown_fields).merge(rmd_fields).merge(tax_fields)
     end
 
     def portfolio
@@ -64,6 +64,10 @@ module Retirement
         pretax_savings: float(:pretax_savings, min: 0.0),
         roth_savings: float(:roth_savings, min: 0.0),
       }
+    end
+
+    def tax_fields
+      { tax_rate: float(:tax_rate, default: 0.22, min: 0.0, max: 1.0) }
     end
 
     def allocation_map

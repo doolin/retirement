@@ -18,6 +18,7 @@
     Roth: $<%= commify(scenario[:roth_savings]) %> |
     Age: <%= scenario[:current_age] %>
   <% end %>
+  <br>Tax rate: <%= (scenario[:tax_rate] * 100).round(1) %>%
 </p>
 
 <%
@@ -36,6 +37,8 @@
 
   rmd_amounts = rmd_schedule.map { |r| r[:rmd].round(0) }
   rmd_ages = rmd_schedule.map { |r| r[:age] }
+  net_annuals = rmd_schedule.map { |r| r[:net_annual].round(0) }
+  net_monthlies = rmd_schedule.map { |r| r[:net_monthly].round(0) }
   has_rmd = rmd_amounts.any? { |r| r > 0 }
   first_rmd_year = rmd_schedule.find { |r| r[:rmd] > 0 }
   peak_rmd = rmd_amounts.max || 0
@@ -103,7 +106,11 @@
   <div>
     <h2>Deterministic</h2>
     <table>
-      <tr><th>Yr</th><th>Balance</th><% if has_rmd %><th>Age</th><th>RMD</th><% end %></tr>
+      <tr>
+        <th>Yr</th><th>Balance</th>
+        <% if has_rmd %><th>Age</th><th>RMD</th><% end %>
+        <th>Net/yr</th><th>Net/mo</th>
+      </tr>
       <% projections.order(:year).each_with_index do |row, idx| %>
         <tr>
           <td><%= row[:year] %></td>
@@ -112,6 +119,8 @@
           <td><%= rmd_ages[idx] %></td>
           <td>$<%= commify(rmd_amounts[idx]) %></td>
           <% end %>
+          <td>$<%= commify(net_annuals[idx]) %></td>
+          <td>$<%= commify(net_monthlies[idx]) %></td>
         </tr>
       <% end %>
     </table>

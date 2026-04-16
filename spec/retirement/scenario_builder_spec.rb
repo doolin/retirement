@@ -102,6 +102,24 @@ RSpec.describe Retirement::ScenarioBuilder do
     end
   end
 
+  describe "tax fields" do
+    it "defaults tax_rate to 0.22" do
+      expect(builder.scenario[:tax_rate]).to eq(0.22)
+    end
+
+    it "parses tax_rate from params" do
+      p = params.merge(tax_rate: "0.30")
+      expect(described_class.new(p).scenario[:tax_rate]).to eq(0.30)
+    end
+
+    it "clamps tax_rate into [0, 1]" do
+      low = described_class.new(params.merge(tax_rate: "-0.5"))
+      high = described_class.new(params.merge(tax_rate: "2.0"))
+      expect(low.scenario[:tax_rate]).to eq(0.0)
+      expect(high.scenario[:tax_rate]).to eq(1.0)
+    end
+  end
+
   describe "mangled numeric inputs" do
     it "sanitizes malformed values without crashing" do
       fuzz_params = {

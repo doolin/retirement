@@ -27,6 +27,7 @@ module Retirement
         Integer :current_age, default: 65
         Numeric :pretax_savings, default: 0
         Numeric :roth_savings, default: 0
+        Float :tax_rate, default: 0.22
       end
     end
 
