@@ -13,7 +13,7 @@ module Retirement
     end
 
     def scenario
-      base_fields.merge(drawdown_fields)
+      base_fields.merge(drawdown_fields).merge(rmd_fields)
     end
 
     def portfolio
@@ -55,6 +55,14 @@ module Retirement
       {
         drawdown_percent: float(:drawdown_percent, min: 0.0, max: 1.0),
         drawdown_fixed: float(:drawdown_fixed, min: 0.0),
+      }
+    end
+
+    def rmd_fields
+      {
+        current_age: int(:current_age, default: 65, min: 18, max: 120),
+        pretax_savings: float(:pretax_savings, min: 0.0),
+        roth_savings: float(:roth_savings, min: 0.0),
       }
     end
 

@@ -75,6 +75,7 @@ Metrics/AbcSize:
   Max: 12
   Exclude:
     - "lib/retirement/statistics.rb"
+    - "lib/retirement/database.rb"
 
 Metrics/CyclomaticComplexity:
   Max: 5

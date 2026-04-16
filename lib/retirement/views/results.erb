@@ -13,6 +13,11 @@
   <% if portfolio %>
     <br>Portfolio: <%= portfolio.describe.map { |a| "#{a[:name]} #{(a[:weight] * 100).round}%" }.join(", ") %>
   <% end %>
+  <% if scenario[:pretax_savings].to_f > 0 %>
+    <br>Pre-tax: $<%= commify(scenario[:pretax_savings]) %> |
+    Roth: $<%= commify(scenario[:roth_savings]) %> |
+    Age: <%= scenario[:current_age] %>
+  <% end %>
 </p>
 
 <%
@@ -28,6 +33,12 @@
   mc_p10 = monte_carlo.map { |r| r[:p10].round(0) }
   mc_p50 = monte_carlo.map { |r| r[:p50].round(0) }
   mc_p90 = monte_carlo.map { |r| r[:p90].round(0) }
+
+  rmd_amounts = rmd_schedule.map { |r| r[:rmd].round(0) }
+  rmd_ages = rmd_schedule.map { |r| r[:age] }
+  has_rmd = rmd_amounts.any? { |r| r > 0 }
+  first_rmd_year = rmd_schedule.find { |r| r[:rmd] > 0 }
+  peak_rmd = rmd_amounts.max || 0
 
   final_det = det_balances.last || 0
   final_p10 = mc_p10.last || 0
@@ -52,6 +63,16 @@
     <div class="value">$<%= commify(final_p90) %></div>
     <div class="label">Best 10%</div>
   </div>
+  <% if has_rmd %>
+  <div class="card">
+    <div class="value">$<%= commify(first_rmd_year[:rmd]) %></div>
+    <div class="label">First RMD (age <%= first_rmd_year[:age] %>)</div>
+  </div>
+  <div class="card">
+    <div class="value">$<%= commify(peak_rmd) %></div>
+    <div class="label">Peak RMD</div>
+  </div>
+  <% end %>
 </div>
 
 <h2>Balance Over Time</h2>
@@ -64,6 +85,13 @@
   <canvas id="mcChart"></canvas>
 </div>
 
+<% if has_rmd %>
+<h2>Required Minimum Distributions</h2>
+<div class="chart-container">
+  <canvas id="rmdChart"></canvas>
+</div>
+<% end %>
+
 <% if portfolio %>
 <h2>Portfolio Allocation</h2>
 <div class="chart-container">
@@ -75,11 +103,15 @@
   <div>
     <h2>Deterministic</h2>
     <table>
-      <tr><th>Yr</th><th>Balance</th></tr>
-      <% projections.order(:year).each do |row| %>
+      <tr><th>Yr</th><th>Balance</th><% if has_rmd %><th>Age</th><th>RMD</th><% end %></tr>
+      <% projections.order(:year).each_with_index do |row, idx| %>
         <tr>
           <td><%= row[:year] %></td>
           <td class="highlight">$<%= commify(row[:balance]) %></td>
+          <% if has_rmd %>
+          <td><%= rmd_ages[idx] %></td>
+          <td>$<%= commify(rmd_amounts[idx]) %></td>
+          <% end %>
         </tr>
       <% end %>
     </table>
@@ -176,6 +208,33 @@ new Chart(document.getElementById('mcChart'), {
     }
   }
 });
+
+<% if has_rmd %>
+// RMD bar chart
+new Chart(document.getElementById('rmdChart'), {
+  type: 'bar',
+  data: {
+    labels: <%= rmd_ages.to_json %>,
+    datasets: [{
+      label: 'Required Minimum Distribution',
+      data: <%= rmd_amounts.to_json %>,
+      backgroundColor: 'rgba(243,156,18,0.6)',
+      borderColor: '#f39c12',
+      borderWidth: 1,
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      tooltip: { callbacks: { label: (ctx) => 'RMD: ' + fmt(ctx.raw) } }
+    },
+    scales: {
+      y: { ticks: { callback: (v) => fmt(v) } },
+      x: { title: { display: true, text: 'Age' } }
+    }
+  }
+});
+<% end %>
 
 <% if portfolio %>
 // Allocation pie chart

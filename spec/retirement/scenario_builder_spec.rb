@@ -75,6 +75,33 @@ RSpec.describe Retirement::ScenarioBuilder do
     end
   end
 
+  describe "RMD fields" do
+    it "parses current_age" do
+      expect(builder.scenario[:current_age]).to eq(65)
+    end
+
+    it "parses pretax_savings" do
+      p = params.merge(pretax_savings: "300000")
+      expect(described_class.new(p).scenario[:pretax_savings]).to eq(300_000.0)
+    end
+
+    it "defaults pretax_savings to zero" do
+      expect(builder.scenario[:pretax_savings]).to eq(0.0)
+    end
+
+    it "defaults current_age for invalid input" do
+      p = params.merge(current_age: "bad")
+      expect(described_class.new(p).scenario[:current_age]).to eq(65)
+    end
+
+    it "clamps current_age into range" do
+      low = described_class.new(params.merge(current_age: "10"))
+      high = described_class.new(params.merge(current_age: "200"))
+      expect(low.scenario[:current_age]).to eq(18)
+      expect(high.scenario[:current_age]).to eq(120)
+    end
+  end
+
   describe "mangled numeric inputs" do
     it "sanitizes malformed values without crashing" do
       fuzz_params = {
