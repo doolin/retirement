@@ -19,7 +19,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency "lamby", "~> 5.0"
-  spec.add_dependency "puma", "~> 7.0"
+  spec.add_dependency "puma", "~> 8.0"
   spec.add_dependency "sequel", "~> 5.0"
   spec.add_dependency "sinatra", "~> 4.0"
   spec.add_dependency "sqlite3", "~> 2.0"
