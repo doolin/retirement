@@ -2,7 +2,7 @@
 id: RC-0015
 title: Fix stale Gemfile.lock and CI Ruby version
 type: bug
-status: backlog
+status: done
 value: 3                   # CI won't work without this
 effort: 1                  # bundle install + CI config tweak
 urgency: 4                 # blocks CI pipeline
@@ -10,8 +10,8 @@ risk: 1                    # straightforward
 score: 7.0                 # (3 + 4) / 1
 owner: dave
 created: 2026-03-14
-updated: 2026-03-14
-completed:
+updated: 2026-05-07
+completed: 2026-05-07
 parent: null
 depends_on: []
 area: infrastructure
@@ -45,6 +45,19 @@ uses a Ruby version that `setup-ruby` actually supports.
   may need resolving.
 - Ruby 4.0 may need to be changed to 3.3 in CI until setup-ruby supports it.
 - Consider pinning bundler version in CI.
+
+## Resolution (2026-05-07)
+
+Closed as superseded — work landed across two later tickets:
+
+- **RC-0024** refreshed `Gemfile.lock` end-to-end via `bundle update`,
+  picking up every gem in the gemspec/Gemfile within its declared range.
+- **RC-0025** loosened `puma` to `~> 8.0` and locked to 8.0.1.
+- `.github/workflows/ci.yml` already pins `ruby-version: "3.3"` and uses
+  `bundler-cache: true`, so `bundle exec rspec` and `bundle exec rubocop`
+  run cleanly in CI.
+
+Acceptance criteria are satisfied transitively; no further work needed.
 
 ## LLM Context
 
