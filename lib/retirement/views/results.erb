@@ -10,6 +10,9 @@
   <% if scenario[:drawdown_fixed] > 0 %>
     + $<%= commify(scenario[:drawdown_fixed]) %>/yr
   <% end %>
+  <% if scenario[:retirement_age].to_i > scenario[:current_age].to_i %>
+    (starts at age <%= scenario[:retirement_age] %>, in <%= scenario[:retirement_age].to_i - scenario[:current_age].to_i %> yr)
+  <% end %>
   <% if portfolio %>
     <br>Portfolio: <%= portfolio.describe.map { |a| "#{a[:name]} #{(a[:weight] * 100).round}%" }.join(", ") %>
   <% end %>

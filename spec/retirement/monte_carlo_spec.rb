@@ -41,6 +41,30 @@ RSpec.describe Retirement::MonteCarlo do
       expect(results.length).to eq(30)
     end
 
+    it "skips drawdown before the retirement year" do
+      pre_retirement = {
+        savings: 100_000, annual_income: 0, annual_expenses: 0,
+        return_rate: 0.0, inflation_rate: 0.0,
+        drawdown_percent: 0.04, drawdown_fixed: 0,
+        current_age: 50, retirement_age: 65
+      }
+      row = described_class.new(pre_retirement).run(trials: 50, years: 5).last
+      expect(row[:p50]).to be_within(0.5).of(100_000)
+    end
+
+    it "applies drawdown from the retirement year onward" do
+      crossing = {
+        savings: 100_000, annual_income: 0, annual_expenses: 0,
+        return_rate: 0.0, inflation_rate: 0.0,
+        drawdown_percent: 0.04, drawdown_fixed: 0,
+        current_age: 64, retirement_age: 65
+      }
+      results = described_class.new(crossing).run(trials: 50, years: 3)
+      expect(results[0][:p50]).to be_within(0.5).of(100_000)
+      expect(results[1][:p50]).to be < 100_000
+      expect(results[2][:p50]).to be < results[1][:p50]
+    end
+
     it "handles non-finite scenario fields" do
       bad = {
         savings: 100_000,

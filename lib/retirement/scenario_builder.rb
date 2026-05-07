@@ -61,6 +61,7 @@ module Retirement
     def rmd_fields
       {
         current_age: int(:current_age, default: 65, min: 18, max: 120),
+        retirement_age: int(:retirement_age, default: 65, min: 18, max: 120),
         pretax_savings: float(:pretax_savings, min: 0.0),
         roth_savings: float(:roth_savings, min: 0.0),
       }

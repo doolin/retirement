@@ -44,7 +44,7 @@ module Retirement
     end
 
     def adjusted_drawdown(balance, year)
-      compute_drawdown(balance, scenario) *
+      drawdown_for_year(balance, scenario, year) *
         inflation_factor(year, scenario)
     end
 
