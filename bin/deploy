@@ -2,7 +2,7 @@
 set -euo pipefail
 
 LAMBDA_FUNCTION="retirement"
-S3_BUCKET="retirement-deployments"
+S3_BUCKET="${S3_BUCKET:-retirement-deployments}"
 S3_KEY="retirement-deploy.zip"
 AWS_REGION="us-west-1"
 CF_DISTRIBUTION="ERIW60YQ29CKU"

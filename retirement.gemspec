@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.description = "Track finances and compute statistical projections for retirement planning."
   spec.homepage = "https://github.com/doolin/retirement"
   spec.license = "MIT"
-  spec.required_ruby_version = ">= 3.3"
+  spec.required_ruby_version = ">= 4.0"
   spec.metadata["rubygems_mfa_required"] = "true"
 
   spec.files = Dir.glob("{lib,exe}/**/*") + %w[README.md config.ru config.rb app.rb]

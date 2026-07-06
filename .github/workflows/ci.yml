@@ -18,7 +18,7 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: "3.3"
+          ruby-version: "4.0"
           bundler-cache: true
 
       - name: Run RSpec
@@ -61,7 +61,7 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: "3.3"
+          ruby-version: "4.0"
           bundler-cache: true
 
       - name: Configure AWS credentials
@@ -71,6 +71,8 @@ jobs:
           aws-region: us-west-1
 
       - name: Build and deploy
+        env:
+          DEPLOY_S3_BUCKET: ${{ vars.DEPLOY_S3_BUCKET || 'retirement-deployments' }}
         run: |
           echo "==> Writing REVISION..."
           git rev-parse --short HEAD > REVISION
@@ -91,12 +93,23 @@ jobs:
           (cd "$BUILD_DIR" && zip -qr "$DEPLOY_ZIP" . -x '*.DS_Store')
 
           echo "==> Uploading to S3..."
-          aws s3 cp "$DEPLOY_ZIP" s3://retirement-deployments/retirement-deploy.zip --region us-west-1
+          aws s3 cp "$DEPLOY_ZIP" "s3://$DEPLOY_S3_BUCKET/retirement-deploy.zip" --region us-west-1
+
+          echo "==> Setting Lambda runtime to ruby4.0..."
+          aws lambda update-function-configuration \
+            --function-name retirement \
+            --runtime ruby4.0 \
+            --region us-west-1 \
+            --query 'Runtime' --output text
+
+          aws lambda wait function-updated \
+            --function-name retirement \
+            --region us-west-1
 
           echo "==> Updating Lambda..."
           aws lambda update-function-code \
             --function-name retirement \
-            --s3-bucket retirement-deployments \
+            --s3-bucket "$DEPLOY_S3_BUCKET" \
             --s3-key retirement-deploy.zip \
             --region us-west-1 \
             --query 'FunctionName' --output text
