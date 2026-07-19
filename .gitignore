@@ -4,3 +4,6 @@
 /scripts/node_modules/
 ci-artifacts.zip
 attestation.pdf
+
+# Local Claude Code settings — per-machine, not shared.
+.claude/settings.local.json
