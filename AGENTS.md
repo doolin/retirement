@@ -1,5 +1,15 @@
 # Agent Guidance
 
+## Commons
+
+Read `COMMONS.md` first. It is the shared Straylight family baseline;
+this file is the local layer for this repository only. Local guidance
+here overrides the commons only where it is explicit.
+
+### OVERRIDES
+
+None.
+
 Hello, Agent!
 
 Here are a few things to help us stay aligned, and ensure
