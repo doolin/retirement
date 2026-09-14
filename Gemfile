@@ -13,3 +13,7 @@ group :development, :test do
   gem "rubocop-rspec", require: false
   gem "simplecov", require: false
 end
+
+# Audits the locked gems against the Ruby Advisory Database:
+#   bundle exec bundle-audit check --update
+gem "bundler-audit", require: false, groups: %i[development test]
