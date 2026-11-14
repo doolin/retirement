@@ -16,7 +16,7 @@
 
 ## Disciplines
 
-How the family works — applies to every agent:
+How the portfolio works — applies to every agent:
 
 ### Hold "who you are" apart from "where you are"
 Your identity (your persona) is persistent; the repo you are working in is
